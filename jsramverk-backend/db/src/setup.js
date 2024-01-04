@@ -4,14 +4,14 @@
  */
 "use strict";
 
-const functions = require('./functions.js');
+import { resetCollection } from './functions.js';
 
-const fs = require("fs");
-const path = require("path");
-const docs = JSON.parse(fs.readFileSync(
-    path.resolve(__dirname, "setup.json"),
+import { readFileSync } from "fs";
+import { resolve } from "path";
+const docs = JSON.parse(readFileSync(
+    resolve(__dirname, "setup.json"),
     "utf8"
 ));
 
-functions.resetCollection("tickets", docs)
+resetCollection("tickets", docs)
     .catch(err => console.log(err));

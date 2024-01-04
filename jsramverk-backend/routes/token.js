@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+const router = Router();
 
-const auth = require("../models/auth.js");
+import { createToken } from "../models/auth.js";
 
-router.get('/', (req, res) => auth.createToken(req, res));
+router.get('/', (req, res) => createToken(req, res));
 
-module.exports = router;
+export default router;

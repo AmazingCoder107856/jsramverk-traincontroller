@@ -1,13 +1,9 @@
-const {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLInt,
-} = require('graphql');
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 
 
-const ticketModel = require("../models/tickets.js");
+import { createTicket, updateTicket as _updateTicket } from "../models/tickets.js";
 
-const TicketType = require("./tickets.js");
+import TicketType from "./tickets.js";
 
 const RootMutationType = new GraphQLObjectType({
     name: 'Mutation',
@@ -30,7 +26,7 @@ const RootMutationType = new GraphQLObjectType({
                     traindate: args.traindate
                 };
 
-                return await ticketModel.createTicket(newTicket);
+                return await createTicket(newTicket);
             }
         },
         updateTicket: {
@@ -50,10 +46,10 @@ const RootMutationType = new GraphQLObjectType({
                     traindate: args.traindate
                 };
 
-                return await ticketModel.updateTicket(updatedTicket);
+                return await _updateTicket(updatedTicket);
             }
         },
     })
 });
 
-module.exports = RootMutationType;
+export default RootMutationType;

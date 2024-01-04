@@ -7,17 +7,17 @@
 process.env.NODE_ENV = 'test';
 
 
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const server = require('../app.js');
-const database = require("../db/database.js");
+import { should, use, request } from 'chai';
+import chaiHttp from 'chai-http';
+import server from '../app.js';
+import { getDb, getUserDb } from "../db/database.js";
 const collectionName = "tickets";
-const functions = require("../db/src/functions.js");
+import { resetCollection } from "../db/src/functions.js";
 
-const fs = require("fs");
-const path = require("path");
-const docs = JSON.parse(fs.readFileSync(
-    path.resolve(__dirname, "../db/src/setup.json"),
+import { readFileSync } from "fs";
+import { resolve } from "path";
+const docs = JSON.parse(readFileSync(
+    resolve(__dirname, "../db/src/setup.json"),
     "utf8"
 ));
 
@@ -55,15 +55,15 @@ const ticketsQuery = `{ Tickets {
     }`;
 
 
-chai.should();
-chai.use(chaiHttp);
+should();
+use(chaiHttp);
 
 let token;
 let apiKey;
 
 describe('root', () => {
     before(async () => {
-        const db = await database.getDb();
+        const db = await getDb();
 
         db.db.listCollections(
             { name: collectionName }
@@ -80,17 +80,17 @@ describe('root', () => {
             .finally(async function() {
                 await db.client.close();
             });
-        await functions.resetCollection("tickets", docs)
+        await resetCollection("tickets", docs)
             .catch(err => console.log(err));
     });
 
     beforeEach(async () => {
-        const response = await chai.request(server).get('/token');
+        const response = await request(server).get('/token');
 
         token = response._body.data.token;
 
-        await chai.request(server).get('/register').send({email: "app@email.se", password: "test"});
-        let db = await database.getUserDb();
+        await request(server).get('/register').send({email: "app@email.se", password: "test"});
+        let db = await getUserDb();
         let found = await db.collection.findOne({ email: "app@email.se" });
 
         apiKey = found.key;
@@ -99,7 +99,7 @@ describe('root', () => {
     /* GET codes from graphql */
     describe('Get codes from graphql', () => {
         it('should get 200 when getting codes', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/graphql?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .send({ query: codesQuery})
@@ -117,7 +117,7 @@ describe('root', () => {
     /* GET delays from graphql */
     describe('Get delays from graphql', () => {
         it('should get 200 when getting delays', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/graphql?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .send({ query: delaysQuery})
@@ -135,7 +135,7 @@ describe('root', () => {
     /* GET tickets from graphql */
     describe('Get tickets from graphql', () => {
         it('should get 200 when getting tickets', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/graphql?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .send({ query: ticketsQuery})
@@ -154,7 +154,7 @@ describe('root', () => {
     /* GET single code from graphql */
     describe('Get single code from graphql', () => {
         it('should get 200 when getting single code', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/graphql?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .send({ query: `{Code(Code: "ANA002"){Level1Description}}`})
@@ -172,7 +172,7 @@ describe('root', () => {
     /* GET single ticket from graphql */
     describe('Get single ticket from graphql', () => {
         it('should get 200 when getting single ticket', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/graphql?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .send({ query: `{Ticket(id: 1){code}}`})

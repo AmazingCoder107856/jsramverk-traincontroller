@@ -1,10 +1,10 @@
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+const router = Router();
 
-const tickets = require("../models/tickets.js");
+import { getTickets, createTicket } from "../models/tickets.js";
 
-router.get('/', (req, res) => tickets.getTickets(req, res));
+router.get('/', (req, res) => getTickets(req, res));
 
-router.post('/', (req, res) => tickets.createTicket(req, res));
+router.post('/', (req, res) => createTicket(req, res));
 
-module.exports = router;
+export default router;

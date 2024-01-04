@@ -1,8 +1,4 @@
-const {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLInt
-} = require('graphql');
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 
 const TicketType = new GraphQLObjectType({
     name: 'Ticket',
@@ -15,4 +11,4 @@ const TicketType = new GraphQLObjectType({
     })
 });
 
-module.exports = TicketType;
+export default TicketType;

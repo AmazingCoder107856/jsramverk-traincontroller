@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 function getQuery() {
     return `<REQUEST>
@@ -39,4 +39,4 @@ const codes = {
     }
 };
 
-module.exports = codes;
+export default codes;

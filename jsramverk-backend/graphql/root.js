@@ -1,17 +1,12 @@
-const {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLList,
-    GraphQLInt
-} = require('graphql');
+import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLInt } from 'graphql';
 
-const codesModel = require("../models/codes.js");
-const delayedModel = require("../models/delayed.js");
-const ticketModel = require("../models/tickets.js");
+import { getCodes } from "../models/codes.js";
+import { getDelayedTrains } from "../models/delayed.js";
+import { getTickets } from "../models/tickets.js";
 
-const CodeType = require("./codes.js");
-const DelayType = require("./delayed.js");
-const TicketType = require("./tickets.js");
+import CodeType from "./codes.js";
+import DelayType from "./delayed.js";
+import TicketType from "./tickets.js";
 
 
 const RootQueryType = new GraphQLObjectType({
@@ -25,7 +20,7 @@ const RootQueryType = new GraphQLObjectType({
                 Code: { type: GraphQLString }
             },
             resolve: async function(parent, args) {
-                let codesArray = await codesModel.getCodes();
+                let codesArray = await getCodes();
 
                 return codesArray.find(code => code.Code === args.Code);
             }
@@ -34,7 +29,7 @@ const RootQueryType = new GraphQLObjectType({
             type: new GraphQLList(CodeType),
             description: 'List of all codes',
             resolve: async function() {
-                return await codesModel.getCodes();
+                return await getCodes();
             }
         },
         Delay: {
@@ -44,7 +39,7 @@ const RootQueryType = new GraphQLObjectType({
                 OperationalTrainNumber: { type: GraphQLString },
             },
             resolve: async function(parent, args) {
-                let delaysArray = await delayedModel.getDelayedTrains();
+                let delaysArray = await getDelayedTrains();
 
                 return delaysArray
                     .find(delay => delay.OperationalTrainNumber === args.OperationalTrainNumber);
@@ -54,7 +49,7 @@ const RootQueryType = new GraphQLObjectType({
             type: new GraphQLList(DelayType),
             description: 'List of all delays',
             resolve: async function() {
-                return await delayedModel.getDelayedTrains();
+                return await getDelayedTrains();
             }
         },
         Ticket: {
@@ -64,7 +59,7 @@ const RootQueryType = new GraphQLObjectType({
                 id: { type: GraphQLInt },
             },
             resolve: async function(parent, args) {
-                let ticketArray = await ticketModel.getTickets();
+                let ticketArray = await getTickets();
 
                 return ticketArray.find(ticket => ticket.id === args.id);
             }
@@ -73,10 +68,10 @@ const RootQueryType = new GraphQLObjectType({
             type: new GraphQLList(TicketType),
             description: 'List of all tickets',
             resolve: async function() {
-                return await ticketModel.getTickets();
+                return await getTickets();
             }
         }
     })
 });
 
-module.exports = RootQueryType;
+export default RootQueryType;

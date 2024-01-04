@@ -6,17 +6,17 @@
 
 process.env.NODE_ENV = 'test';
 
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const server = require('../app.js');
-const database = require("../db/database.js");
+import { should, use, request } from 'chai';
+import chaiHttp from 'chai-http';
+import server from '../app.js';
+import { getDb, getUserDb } from "../db/database.js";
 const collectionName = "tickets";
-const functions = require("../db/src/functions.js");
+import { resetCollection } from "../db/src/functions.js";
 
-const fs = require("fs");
-const path = require("path");
-const docs = JSON.parse(fs.readFileSync(
-    path.resolve(__dirname, "../db/src/setup.json"),
+import { readFileSync } from "fs";
+import { resolve } from "path";
+const docs = JSON.parse(readFileSync(
+    resolve(__dirname, "../db/src/setup.json"),
     "utf8"
 ));
 
@@ -55,15 +55,15 @@ const updateTicket = `mutation{updateTicket(
         traindate
     }}`;
 
-chai.should();
-chai.use(chaiHttp);
+should();
+use(chaiHttp);
 
 let token;
 let apiKey;
 
 describe('mutation', () => {
     before(async () => {
-        const db = await database.getDb();
+        const db = await getDb();
 
         db.db.listCollections(
             { name: collectionName }
@@ -80,17 +80,17 @@ describe('mutation', () => {
             .finally(async function() {
                 await db.client.close();
             });
-        await functions.resetCollection("tickets", docs)
+        await resetCollection("tickets", docs)
             .catch(err => console.log(err));
     });
 
     beforeEach(async () => {
-        const response = await chai.request(server).get('/token');
+        const response = await request(server).get('/token');
 
         token = response._body.data.token;
 
-        await chai.request(server).get('/register').send({email: "app@email.se", password: "test"});
-        let db = await database.getUserDb();
+        await request(server).get('/register').send({email: "app@email.se", password: "test"});
+        let db = await getUserDb();
 
         let found = await db.collection.findOne({ email: "app@email.se" });
 
@@ -100,7 +100,7 @@ describe('mutation', () => {
     /* make a new ticket */
     describe('make new ticket in graphql', () => {
         it('should get 200 when making new ticket', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/graphql?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .send({ query: newTicket})
@@ -123,7 +123,7 @@ describe('mutation', () => {
     /* update ticket in graphql */
     describe('update ticket in graphql', () => {
         it('should get 200 when updating a ticket', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/graphql?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .send({ query: updateTicket})

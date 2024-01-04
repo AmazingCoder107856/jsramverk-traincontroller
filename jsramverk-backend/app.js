@@ -1,29 +1,29 @@
 require('dotenv').config();
 
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const bodyParser = require('body-parser');
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import { json, urlencoded } from 'body-parser';
 
-const trains = require('./models/trains.js');
-const delayed = require('./routes/delayed.js');
-const tickets = require('./routes/tickets.js');
-const ticketModel = require("./models/tickets.js");
-const codes = require('./routes/codes.js');
-const token = require('./routes/token.js');
-const login = require('./routes/login.js');
-const register = require('./routes/register.js');
-const authModel = require('./models/auth.js');
+import { fetchTrainPositions } from './models/trains.js';
+import delayed from './routes/delayed.js';
+import tickets from './routes/tickets.js';
+import { getTickets } from "./models/tickets.js";
+import codes from './routes/codes.js';
+import token from './routes/token.js';
+import login from './routes/login.js';
+import register from './routes/register.js';
+import { checkAPIKey, checkToken } from './models/auth.js';
 
-const { createHandler } = require('graphql-http/lib/use/express');
+import { createHandler } from 'graphql-http/lib/use/express';
 
 // const expressPlayground = require('graphql-playground-middleware-express')
 //     .default
 
-const { GraphQLSchema } = require('graphql');
+import { GraphQLSchema } from 'graphql';
 
-const RootQueryType = require("./graphql/root.js");
-const RootMutationType = require("./graphql/mutate.js");
+import RootQueryType from "./graphql/root.js";
+import RootMutationType from "./graphql/mutate.js";
 
 const schema = new GraphQLSchema({
     query: RootQueryType,
@@ -40,8 +40,8 @@ app.use(morgan('dev'));
 
 app.disable('x-powered-by');
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(json()); // for parsing application/json
+app.use(urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 const io = require("socket.io")(httpServer, {
     cors: {
@@ -66,8 +66,8 @@ app.use("/login", login);
 app.use("/register", register);
 app.use("/token", token);
 
-app.all('*', authModel.checkAPIKey);
-app.all('*', authModel.checkToken);
+app.all('*', checkAPIKey);
+app.all('*', checkToken);
 
 app.use('/graphql', createHandler({
     schema: schema
@@ -80,7 +80,7 @@ app.use("/codes", codes);
 let allTickets = [];
 
 io.sockets.on('connection', async function(socket) {
-    allTickets = await ticketModel.getTickets();
+    allTickets = await getTickets();
     console.log(socket.id);
     allTickets.map((ticket) => {
         ticket.locked = false;
@@ -102,7 +102,7 @@ io.sockets.on('connection', async function(socket) {
     });
 
     socket.on("changeStatus", async function(data) {
-        allTickets = await ticketModel.getTickets();
+        allTickets = await getTickets();
         allTickets.forEach((ticket) => {
             if (ticket.id === data) {
                 ticket.locked = false;
@@ -123,7 +123,7 @@ const server = httpServer.listen(port, async () => {
     console.log(`Example app listening on port ${port}`);
 });
 
-trains.fetchTrainPositions(io);
+fetchTrainPositions(io);
 
 
-module.exports = server;
+export default server;

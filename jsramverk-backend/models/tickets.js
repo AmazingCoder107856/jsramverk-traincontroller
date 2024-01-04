@@ -1,4 +1,4 @@
-const functions = require('../db/src/functions.js');
+import { findInCollection } from '../db/src/functions.js';
 
 const tickets = {
     getTickets: async function getTickets(req, res=undefined) {
@@ -6,7 +6,7 @@ const tickets = {
 
         try {
             db = await database.getDb();
-            const resultSet = await functions.findInCollection("tickets", {}, {}, 0);
+            const resultSet = await findInCollection("tickets", {}, {}, 0);
 
             if (res === undefined) {
                 return resultSet;
@@ -86,4 +86,4 @@ const tickets = {
     }
 };
 
-module.exports = tickets;
+export default tickets;

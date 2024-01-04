@@ -6,22 +6,22 @@
 
 process.env.NODE_ENV = 'test';
 
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const server = require('../app.js');
-const database = require("../db/database.js");
+import { should, use, request } from 'chai';
+import chaiHttp from 'chai-http';
+import server from '../app.js';
+import { getDb, getUserDb } from "../db/database.js";
 const collectionName = "tickets";
-const functions = require("../db/src/functions.js");
+import { resetCollection } from "../db/src/functions.js";
 
-chai.should();
-chai.use(chaiHttp);
+should();
+use(chaiHttp);
 
 let token;
 let apiKey;
 
 describe('tickets', () => {
     before(async () => {
-        const db = await database.getDb();
+        const db = await getDb();
 
         db.db.listCollections(
             { name: collectionName }
@@ -41,12 +41,12 @@ describe('tickets', () => {
     });
 
     beforeEach(async () => {
-        const response = await chai.request(server).get('/token');
+        const response = await request(server).get('/token');
 
         token = response._body.data.token;
 
-        await chai.request(server).get('/register').send({email: "app@email.se", password: "test"});
-        let db = await database.getUserDb();
+        await request(server).get('/register').send({email: "app@email.se", password: "test"});
+        let db = await getUserDb();
 
         let found = await db.collection.findOne({ email: "app@email.se" });
 
@@ -56,7 +56,7 @@ describe('tickets', () => {
     /* GET route */
     describe('GET /tickets', () => {
         it('should get 200 when getting tickets', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/tickets?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .end((err, res) => {
@@ -80,7 +80,7 @@ describe('tickets', () => {
                 traindate: "2023-09-21",
             };
 
-            chai.request(server)
+            request(server)
                 .post("/tickets?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .send(doc)
@@ -111,9 +111,9 @@ describe('tickets', () => {
                 traindate: "2023-09-21"
             }];
 
-            functions.resetCollection(collectionName, doc);
+            resetCollection(collectionName, doc);
 
-            chai.request(server)
+            request(server)
                 .get("/tickets?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .end((err, res) => {

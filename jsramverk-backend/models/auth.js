@@ -1,9 +1,9 @@
-const database = require("../db/database.js");
-const hat = require("hat");
-const validator = require("email-validator");
+import { getUserDb } from "../db/database.js";
+import hat from "hat";
+import { validate } from "email-validator";
 
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import { compare, hash as _hash } from 'bcryptjs';
+import { sign, verify } from 'jsonwebtoken';
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -30,7 +30,7 @@ const auth = {
 
     isValidAPIKey: async function(apiKey, next, path, res) {
         try {
-            const db = await database.getUserDb();
+            const db = await getUserDb();
 
             const filter = { key: apiKey };
 
@@ -67,7 +67,7 @@ const auth = {
             apiKey: ""
         };
 
-        if (email === undefined || !validator.validate(email)) {
+        if (email === undefined || !validate(email)) {
             data.message = "A valid email address is required to obtain an API key.";
             data.email = email;
 
@@ -76,7 +76,7 @@ const auth = {
         }
 
         try {
-            const db = await database.getUserDb();
+            const db = await getUserDb();
 
             const filter = { email: email };
 
@@ -173,7 +173,7 @@ const auth = {
         let db;
 
         try {
-            db = await database.getUserDb();
+            db = await getUserDb();
 
             const filter = { email: email, key: apiKey };
             const user = await db.collection.findOne(filter);
@@ -209,7 +209,7 @@ const auth = {
     },
 
     comparePasswords: function(res, password, user) {
-        bcrypt.compare(password, user.password, (err, result) => {
+        compare(password, user.password, (err, result) => {
             if (err) {
                 return res.status(500).json({
                     errors: {
@@ -223,7 +223,7 @@ const auth = {
 
             if (result) {
                 let payload = { api_key: user.apiKey, email: user.email };
-                let jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
+                let jwtToken = sign(payload, jwtSecret, { expiresIn: '24h' });
 
                 return res.json({
                     data: {
@@ -259,7 +259,7 @@ const auth = {
                     detail: "Email or password missing in request"
                 }
             });
-        } else if (!validator.validate(email)) {
+        } else if (!validate(email)) {
             return res.status(401).json({
                 errors: {
                     status: 401,
@@ -272,7 +272,7 @@ const auth = {
 
         let db;
 
-        db = await database.getUserDb();
+        db = await getUserDb();
 
         let dbFind = await db.collection.findOne({ email: email }) || "";
 
@@ -289,7 +289,7 @@ const auth = {
 
         const apiKey = await this.getNewAPIKey(res, email);
 
-        bcrypt.hash(password, 10, async function(err, hash) {
+        _hash(password, 10, async function(err, hash) {
             if (err) {
                 return res.status(500).json({
                     errors: {
@@ -334,7 +334,7 @@ const auth = {
     createToken: function(req, res) {
         // let payload = { api_key: user.apiKey, email: user.email };
         let payload = { data: "Create token" };
-        let jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
+        let jwtToken = sign(payload, jwtSecret, { expiresIn: '24h' });
 
         return res.json({
             data: {
@@ -351,7 +351,7 @@ const auth = {
         let apiKey = req.query.api_key || req.body.api_key;
 
         if (token) {
-            jwt.verify(token, jwtSecret, function(err, decoded) {
+            verify(token, jwtSecret, function(err, decoded) {
                 if (err) {
                     return res.status(500).json({
                         errors: {
@@ -382,4 +382,4 @@ const auth = {
     }
 };
 
-module.exports = auth;
+export default auth;

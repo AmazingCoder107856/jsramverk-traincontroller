@@ -6,21 +6,21 @@
 
 process.env.NODE_ENV = 'test';
 
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const server = require('../app.js');
-const database = require('../db/database.js');
+import { should, use, request } from 'chai';
+import chaiHttp from 'chai-http';
+import server from '../app.js';
+import { getUserDb } from '../db/database.js';
 const collectionName = "users";
 // const HTMLParser = require('node-html-parser');
 
-chai.should();
-chai.use(chaiHttp);
+should();
+use(chaiHttp);
 
 let found;
 
 describe('auth', () => {
     before(async () => {
-        const db = await database.getUserDb();
+        const db = await getUserDb();
 
         db.db.listCollections(
             { name: collectionName }
@@ -40,14 +40,14 @@ describe('auth', () => {
     });
 
     beforeEach(async () => {
-        let db = await database.getUserDb();
+        let db = await getUserDb();
 
         found = await db.collection.findOne({ email: "test@email.se" });
     });
 
     describe('GET /token', () => {
         it('200 getting /token route', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/token")
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -61,7 +61,7 @@ describe('auth', () => {
 
     describe('POST /register', () => {
         it('401 register without email and password', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/register")
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -74,7 +74,7 @@ describe('auth', () => {
         });
 
         it('401 register with invalid email', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/register")
                 .send({
                     email: "test",
@@ -91,7 +91,7 @@ describe('auth', () => {
         });
 
         it('201 register with email and password', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/register")
                 .send({
                     email: "test@email.se",
@@ -108,7 +108,7 @@ describe('auth', () => {
         });
 
         it('401 register with email that has already been registered', (done) => {
-            chai.request(server)
+            request(server)
                 .post("/register")
                 .send({
                     email: "test@email.se",
@@ -131,7 +131,7 @@ describe('auth', () => {
                     api_key: found.key
                 };
 
-                chai.request(server)
+                request(server)
                     .post("/login")
                     .send(user)
                     .end((err, res) => {
@@ -150,7 +150,7 @@ describe('auth', () => {
                     api_key: found.key
                 };
 
-                chai.request(server)
+                request(server)
                     .post("/login")
                     .send(user)
                     .end((err, res) => {
@@ -169,7 +169,7 @@ describe('auth', () => {
                     password: "test"
                 };
 
-                chai.request(server)
+                request(server)
                     .post("/login")
                     .send(user)
                     .end((err, res) => {
@@ -189,7 +189,7 @@ describe('auth', () => {
                     api_key: found.key
                 };
 
-                chai.request(server)
+                request(server)
                     .post("/login")
                     .send(user)
                     .end((err, res) => {
@@ -209,7 +209,7 @@ describe('auth', () => {
                     api_key: found.key
                 };
 
-                chai.request(server)
+                request(server)
                     .post("/login")
                     .send(user)
                     .end((err, res) => {

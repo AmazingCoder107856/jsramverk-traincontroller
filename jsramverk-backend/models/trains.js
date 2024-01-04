@@ -1,5 +1,5 @@
-const fetch = require('node-fetch');
-const EventSource = require('eventsource');
+import fetch from 'node-fetch';
+import EventSource from 'eventsource';
 
 function getQuery() {
     return `<REQUEST>
@@ -88,4 +88,4 @@ const trains = {
     }
 };
 
-module.exports = trains;
+export default trains;

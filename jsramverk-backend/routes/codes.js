@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+const router = Router();
 
-const codes = require("../models/codes.js");
+import { getCodes } from "../models/codes.js";
 
-router.get('/', (req, res) => codes.getCodes(req, res));
+router.get('/', (req, res) => getCodes(req, res));
 
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 function getQuery() {
     return `<REQUEST>
@@ -61,4 +61,4 @@ const delayed = {
     }
 };
 
-module.exports = delayed;
+export default delayed;

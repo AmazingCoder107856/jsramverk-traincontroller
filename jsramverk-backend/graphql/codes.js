@@ -1,7 +1,4 @@
-const {
-    GraphQLObjectType,
-    GraphQLString,
-} = require('graphql');
+import { GraphQLObjectType, GraphQLString } from 'graphql';
 
 const CodeType = new GraphQLObjectType({
     name: 'Code',
@@ -14,4 +11,4 @@ const CodeType = new GraphQLObjectType({
     })
 });
 
-module.exports = CodeType;
+export default CodeType;

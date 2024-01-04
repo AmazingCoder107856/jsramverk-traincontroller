@@ -6,14 +6,14 @@
 
 process.env.NODE_ENV = 'test';
 
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const server = require('../app.js');
-const database = require('../db/database.js');
+import { should, use, request } from 'chai';
+import chaiHttp from 'chai-http';
+import server from '../app.js';
+import { getUserDb } from '../db/database.js';
 const collectionName = "users";
 
-chai.should();
-chai.use(chaiHttp);
+should();
+use(chaiHttp);
 
 let apiKey = "";
 let token = "";
@@ -21,7 +21,7 @@ let db;
 
 describe('app', () => {
     before(async () => {
-        db = await database.getUserDb();
+        db = await getUserDb();
 
         db.db.listCollections(
             { name: collectionName }
@@ -41,12 +41,12 @@ describe('app', () => {
     });
 
     beforeEach(async () => {
-        const response = await chai.request(server).get('/token');
+        const response = await request(server).get('/token');
 
         token = response._body.data.token;
 
-        await chai.request(server).get('/register').send({email: "app@email.se", password: "test"});
-        db = await database.getUserDb();
+        await request(server).get('/register').send({email: "app@email.se", password: "test"});
+        db = await getUserDb();
 
         let found = await db.collection.findOne({ email: "app@email.se" });
 
@@ -59,7 +59,7 @@ describe('app', () => {
 
     describe('GET /', () => {
         it('200 HAPPY PATH getting base', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/")
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -71,7 +71,7 @@ describe('app', () => {
 
     describe('GET /delayed', () => {
         it('200 getting /delayed route with api key and token', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/delayed?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .end((err, res) => {
@@ -82,7 +82,7 @@ describe('app', () => {
         });
 
         it('401 getting /delayed route without api key and token', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/delayed")
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -92,7 +92,7 @@ describe('app', () => {
         });
 
         it('401 getting /delayed route without token', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/delayed?api_key=" + apiKey)
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -102,7 +102,7 @@ describe('app', () => {
         });
 
         it('401 getting /delayed route without api key', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/delayed")
                 .set('x-access-token', token)
                 .end((err, res) => {
@@ -115,7 +115,7 @@ describe('app', () => {
 
     describe('GET /codes', () => {
         it('200 HAPPY PATH getting /codes route with api key and token', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/codes?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .end((err, res) => {
@@ -126,7 +126,7 @@ describe('app', () => {
         });
 
         it('401 getting /codes route without api key and token', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/codes")
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -136,7 +136,7 @@ describe('app', () => {
         });
 
         it('401 getting /codes route without token', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/codes?api_key=" + apiKey)
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -146,7 +146,7 @@ describe('app', () => {
         });
 
         it('401 getting /codes route without api key', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/codes")
                 .set('x-access-token', token)
                 .end((err, res) => {
@@ -159,7 +159,7 @@ describe('app', () => {
 
     describe('GET /tickets', () => {
         it('200 HAPPY PATH getting /tickets route with api key and token', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/tickets?api_key=" + apiKey)
                 .set('x-access-token', token)
                 .end((err, res) => {
@@ -170,7 +170,7 @@ describe('app', () => {
         });
 
         it('401 getting /tickets route without api key and token', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/tickets")
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -180,7 +180,7 @@ describe('app', () => {
         });
 
         it('401 getting /tickets route without token', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/tickets?api_key=" + apiKey)
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -190,7 +190,7 @@ describe('app', () => {
         });
 
         it('401 getting /tickets route without api key', (done) => {
-            chai.request(server)
+            request(server)
                 .get("/tickets")
                 .set('x-access-token', token)
                 .end((err, res) => {

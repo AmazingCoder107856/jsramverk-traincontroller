@@ -1,11 +1,4 @@
-const {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLList,
-    GraphQLInt,
-    GraphQLBoolean,
-    GraphQLNonNull,
-} = require('graphql');
+import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLInt, GraphQLBoolean, GraphQLNonNull } from 'graphql';
 
 const DelayType = new GraphQLObjectType({
     name: 'Delayed',
@@ -36,4 +29,4 @@ const LocationType = new GraphQLObjectType({
     })
 });
 
-module.exports = DelayType;
+export default DelayType;

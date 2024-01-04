@@ -1,8 +1,4 @@
-const {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLNonNull
-} = require('graphql');
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from 'graphql';
 
 const TrainType = new GraphQLObjectType({
     name: 'Train',
@@ -17,4 +13,4 @@ const TrainType = new GraphQLObjectType({
     })
 });
 
-module.exports = TrainType;
+export default TrainType;

@@ -1,11 +1,11 @@
-const database = require('../db/database.js');
+import { openDb } from '../db/database.js';
 
 const trains = {
     fetchAllDelayedTrains: async function fetchAllDelayedTrains() {
         let db;
 
         try {
-            db = await database.openDb();
+            db = await openDb();
         } catch (error) {
             return {
                 status: error.status,
@@ -17,4 +17,4 @@ const trains = {
     }
 };
 
-module.exports = trains;
+export default trains;

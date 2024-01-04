@@ -5,7 +5,8 @@
 "use strict";
 
 import { resetCollection } from './functions.js';
-
+import { getGlobals } from 'common-es'
+const { __dirname, __filename } = getGlobals(import.meta.url)
 import { readFileSync } from "fs";
 import { resolve } from "path";
 const docs = JSON.parse(readFileSync(

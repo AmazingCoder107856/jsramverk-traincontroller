@@ -1,8 +1,8 @@
 import { Router } from 'express';
 const router = Router();
 
-import { createToken } from "../models/auth.js";
+import tokenModel from "../models/auth.js";
 
-router.get('/', (req, res) => createToken(req, res));
+router.get('/', (req, res) => tokenModel.createToken(req, res));
 
 export default router;

@@ -1,9 +1,9 @@
 import { Router } from 'express';
 const router = Router();
 
-import { login } from "../models/auth.js";
+import loginModel from "../models/auth.js";
 
-router.post('/', (req, res) => login(req, res));
-router.get('/', (req, res) => login(req, res));
+router.post('/', (req, res) => loginModel.login(req, res));
+router.get('/', (req, res) => loginModel.login(req, res));
 
 export default router;

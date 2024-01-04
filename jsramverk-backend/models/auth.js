@@ -1,9 +1,13 @@
-import { getUserDb } from "../db/database.js";
+import database from "../db/database.js";
 import hat from "hat";
 import { validate } from "email-validator";
 
-import { compare, hash as _hash } from 'bcryptjs';
-import { sign, verify } from 'jsonwebtoken';
+// import { compare, hash as _hash } from 'bcryptjs';
+import pkg from 'bcryptjs'; 'jsonwebtoken';
+const { compare, hash: _hash } = pkg;
+// import { sign, verify } from 'jsonwebtoken';
+// import pkg from 'jsonwebtoken';
+const { sign, verify } = pkg;
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -30,7 +34,7 @@ const auth = {
 
     isValidAPIKey: async function(apiKey, next, path, res) {
         try {
-            const db = await getUserDb();
+            const db = await database.getUserDb();
 
             const filter = { key: apiKey };
 
@@ -76,7 +80,7 @@ const auth = {
         }
 
         try {
-            const db = await getUserDb();
+            const db = await database.getUserDb();
 
             const filter = { email: email };
 
@@ -173,7 +177,7 @@ const auth = {
         let db;
 
         try {
-            db = await getUserDb();
+            db = await database.getUserDb();
 
             const filter = { email: email, key: apiKey };
             const user = await db.collection.findOne(filter);
@@ -272,7 +276,7 @@ const auth = {
 
         let db;
 
-        db = await getUserDb();
+        db = await database.getUserDb();
 
         let dbFind = await db.collection.findOne({ email: email }) || "";
 

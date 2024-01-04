@@ -3,7 +3,7 @@
  */
 "use strict";
 
-import { getDb } from '../database.js';
+import database from '../database.js';
 
 /**
  * Reset a collection by removing existing content and insert a default
@@ -19,7 +19,7 @@ import { getDb } from '../database.js';
  * @return {Promise<void>} Void
  */
 async function resetCollection(colName, doc) {
-    const db = await getDb();
+    const db = await database.getDb();
     const col = db.db.collection(colName);
 
     await col.deleteMany();
@@ -43,7 +43,7 @@ async function resetCollection(colName, doc) {
  * @return {Promise<array>} The resultset as an array.
  */
 async function findInCollection(colName, criteria, projection, limit) {
-    const db = await getDb();
+    const db = await database.getDb();
 
     const col = db.db.collection(colName);
     const res = await col.find(criteria, projection).limit(limit).toArray();

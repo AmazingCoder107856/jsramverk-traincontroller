@@ -1,9 +1,9 @@
 import { Router } from 'express';
 const router = Router();
 
-import { register } from "../models/auth.js";
+import registerModel from "../models/auth.js";
 
-router.post('/', (req, res) => register(req, res));
-router.get('/', (req, res) => register(req, res));
+router.post('/', (req, res) => registerModel.register(req, res));
+router.get('/', (req, res) => registerModel.register(req, res));
 
 export default router;

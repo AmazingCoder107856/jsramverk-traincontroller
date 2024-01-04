@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 
 
-import { createTicket, updateTicket as _updateTicket } from "../models/tickets.js";
+import ticketsModel from "../models/tickets.js";
 
 import TicketType from "./tickets.js";
 
@@ -26,7 +26,7 @@ const RootMutationType = new GraphQLObjectType({
                     traindate: args.traindate
                 };
 
-                return await createTicket(newTicket);
+                return await ticketsModel.createTicket(newTicket);
             }
         },
         updateTicket: {
@@ -46,7 +46,7 @@ const RootMutationType = new GraphQLObjectType({
                     traindate: args.traindate
                 };
 
-                return await _updateTicket(updatedTicket);
+                return await ticketsModel.updateTicket(updatedTicket);
             }
         },
     })

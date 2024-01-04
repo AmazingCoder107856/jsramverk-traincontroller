@@ -1,19 +1,22 @@
-require('dotenv').config();
-
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import { json, urlencoded } from 'body-parser';
-
-import { fetchTrainPositions } from './models/trains.js';
+// import { json, urlencoded } from 'body-parser';
+import pkg from 'body-parser';
+const { json, urlencoded } = pkg;
+import trainsModel from './models/trains.js';
 import delayed from './routes/delayed.js';
 import tickets from './routes/tickets.js';
-import { getTickets } from "./models/tickets.js";
+import ticketsModel from "./models/tickets.js";
 import codes from './routes/codes.js';
 import token from './routes/token.js';
 import login from './routes/login.js';
 import register from './routes/register.js';
-import { checkAPIKey, checkToken } from './models/auth.js';
+import authModel from './models/auth.js';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 import { createHandler } from 'graphql-http/lib/use/express';
 
@@ -31,7 +34,7 @@ const schema = new GraphQLSchema({
 });
 
 const app = express();
-const httpServer = require("http").createServer(app);
+const httpServer = createServer(app);
 
 app.use(cors());
 app.options('*', cors());
@@ -43,7 +46,7 @@ app.disable('x-powered-by');
 app.use(json()); // for parsing application/json
 app.use(urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-const io = require("socket.io")(httpServer, {
+const io = new Server (httpServer, {
     cors: {
         //origin: "https://www.student.bth.se",
         origin: "http://localhost:3000",
@@ -66,8 +69,8 @@ app.use("/login", login);
 app.use("/register", register);
 app.use("/token", token);
 
-app.all('*', checkAPIKey);
-app.all('*', checkToken);
+app.all('*', authModel.checkAPIKey);
+app.all('*', authModel.checkToken);
 
 app.use('/graphql', createHandler({
     schema: schema
@@ -80,7 +83,7 @@ app.use("/codes", codes);
 let allTickets = [];
 
 io.sockets.on('connection', async function(socket) {
-    allTickets = await getTickets();
+    allTickets = await ticketsModel.getTickets();
     console.log(socket.id);
     allTickets.map((ticket) => {
         ticket.locked = false;
@@ -102,7 +105,7 @@ io.sockets.on('connection', async function(socket) {
     });
 
     socket.on("changeStatus", async function(data) {
-        allTickets = await getTickets();
+        allTickets = await ticketsModel.getTickets();
         allTickets.forEach((ticket) => {
             if (ticket.id === data) {
                 ticket.locked = false;
@@ -123,7 +126,7 @@ const server = httpServer.listen(port, async () => {
     console.log(`Example app listening on port ${port}`);
 });
 
-fetchTrainPositions(io);
+trainsModel.fetchTrainPositions(io);
 
 
 export default server;

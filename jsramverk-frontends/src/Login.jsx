@@ -19,7 +19,6 @@ async function loginUser(credentials) {
 }
 
 const Login = () => {
-    // const url = "https://jsramverk-trains-meda23.azurewebsites.net/tickets";
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [apiKey, setApiKey] = useState('');

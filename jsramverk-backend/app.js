@@ -3,7 +3,6 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-// import { json, urlencoded } from 'body-parser';
 import pkg from 'body-parser';
 const { json, urlencoded } = pkg;
 import trainsModel from './models/trains.js';
@@ -19,9 +18,6 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 
 import { createHandler } from 'graphql-http/lib/use/express';
-
-// const expressPlayground = require('graphql-playground-middleware-express')
-//     .default
 
 import { GraphQLSchema } from 'graphql';
 
@@ -48,7 +44,6 @@ app.use(urlencoded({ extended: true })); // for parsing application/x-www-form-u
 
 const io = new Server (httpServer, {
     cors: {
-        //origin: "https://www.student.bth.se",
         origin: "http://localhost:3000",
         methods: ["GET", "POST"]
     }
@@ -61,9 +56,6 @@ app.get('/', (req, res) => {
         data: 'Hello World! This is the API for the course jsramverk, by students glpa22 and haco22'
     });
 });
-
-// for developing mode
-// app.get('/playground', expressPlayground({ endpoint: '/graphql' }))
 
 app.use("/login", login);
 app.use("/register", register);
@@ -114,12 +106,6 @@ io.sockets.on('connection', async function(socket) {
 
         io.emit("allTickets", allTickets);
     });
-
-    // socket.on("alltrains", async function() {
-    //     allTrains = await trains.fetchTrainPositions(io);
-
-    //     io.emit("allTrains", allTrains);
-    // });
 });
 
 const server = httpServer.listen(port, async () => {

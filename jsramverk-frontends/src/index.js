@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App.js';
 import TicketsForm from './TicketsForm.jsx';
-// import Tickets from './Tickets.jsx';
 import Login from './Login.jsx';
 import Register from './Register.jsx';
 import Tickets from './Tickets.jsx'
@@ -15,7 +14,6 @@ import PrivateRoute from './PrivateRoute';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-        {/* <BrowserRouter basename="/~dadh22/editor/"> */}
         <BrowserRouter>
           <Routes>
         <Route exact path='/' element={<PrivateRoute/>}>
